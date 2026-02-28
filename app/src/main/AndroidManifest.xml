@@ -25,7 +25,9 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".TeacherDashboardActivity" />
         <activity android:name=".StudentDashboardActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".CreateQuizActivity" />
+        <activity android:name=".QuestionBuilderActivity" />
+        <activity android:name=".QuizAttemptActivity" />
 
     </application>
 

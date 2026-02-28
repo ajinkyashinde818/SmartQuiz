@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Question"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/etQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Question"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:background="@drawable/edit_text_bg"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/etOptionA"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Option A"
+            android:background="@drawable/edit_text_bg"
+            android:paddingLeft="12dp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etOptionB"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Option B"
+            android:background="@drawable/edit_text_bg"
+            android:paddingLeft="12dp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etOptionC"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Option C"
+            android:background="@drawable/edit_text_bg"
+            android:paddingLeft="12dp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/etOptionD"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Option D"
+            android:background="@drawable/edit_text_bg"
+            android:paddingLeft="12dp"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Correct Answer"
+            android:textSize="12sp"
+            android:layout_marginBottom="4dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerCorrectAnswer"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/edit_text_bg"
+            android:layout_marginBottom="16dp"/>
+
+    </LinearLayout>
+</ScrollView>

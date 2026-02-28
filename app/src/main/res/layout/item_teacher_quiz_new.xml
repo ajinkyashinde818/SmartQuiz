@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="#1E293B"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/ivSubjectIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_today"
+            app:tint="@color/brand_purple" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/ivSubjectIcon"
+            android:layout_toStartOf="@id/ivQuizIcon"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvQuizTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quantum Mechanics Quiz 1"
+                android:textColor="@color/text_white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSubject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Physics 101"
+                android:textColor="@color/text_grey"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="45 mins"
+                    android:textColor="@color/text_grey"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvLevel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/bg_search_bar"
+                    android:paddingStart="8dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="2dp"
+                    android:text="Intermediate"
+                    android:textColor="@color/accent_blue"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivQuizIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:alpha="0.3"
+            android:src="@android:drawable/ic_menu_edit"
+            app:tint="@color/brand_blue" />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:drawableStart="@android:drawable/presence_online"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/success_green"
+            android:text="Published"
+            android:textColor="@color/text_grey"
+            android:textSize="10sp" />
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

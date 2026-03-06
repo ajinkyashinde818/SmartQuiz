@@ -131,41 +131,37 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // 1. Save data to Firestore (Fire and Forget)
-                        saveUserToFirestore(name, email, role, dept, year);
-                        
-                        // 2. Show toast instantly
-                        Toast.makeText(RegisterActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
-                        
-                        // 3. Move to login page instantly
-                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
+                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                        if (currentUser != null) {
+                            String uid = currentUser.getUid();
+
+                            Map<String, Object> userMap = new HashMap<>();
+                            userMap.put("uid", uid);
+                            userMap.put("name", name);
+                            userMap.put("email", email);
+                            userMap.put("role", role);
+                            userMap.put("department", dept);
+                            userMap.put("year", year);
+                            userMap.put("profile_photo", "");
+
+                            db.collection("users").document(uid).set(userMap)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(RegisterActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        progressBar.setVisibility(View.GONE);
+                                        btnRegister.setVisibility(View.VISIBLE);
+                                        Toast.makeText(RegisterActivity.this, "Firestore Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        }
                     } else {
                         progressBar.setVisibility(View.GONE);
                         btnRegister.setVisibility(View.VISIBLE);
                         Toast.makeText(RegisterActivity.this, "Registration Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private void saveUserToFirestore(String name, String email, String role, String dept, String year) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) return;
-        
-        String uid = currentUser.getUid();
-
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("uid", uid);
-        userMap.put("name", name);
-        userMap.put("email", email);
-        userMap.put("role", role);
-        userMap.put("department", dept);
-        userMap.put("year", year);
-        userMap.put("profile_photo", "");
-
-        // We trigger the save operation. Firestore handles persistence automatically, 
-        // so it will sync in the background even if we navigate away.
-        db.collection("users").document(uid).set(userMap);
     }
 }

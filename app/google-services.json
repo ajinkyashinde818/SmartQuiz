@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "295138713477",
+    "firebase_url": "https://quiz-app-1f33e-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "quiz-app-1f33e",
     "storage_bucket": "quiz-app-1f33e.firebasestorage.app"
   },

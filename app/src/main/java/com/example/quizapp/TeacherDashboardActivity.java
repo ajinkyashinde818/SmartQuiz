@@ -2,40 +2,23 @@ package com.example.quizapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.cardview.widget.CardView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.firebase.firestore.Query;
 
 public class TeacherDashboardActivity extends AppCompatActivity {
 
-    private RecyclerView rvTeacherQuizzes;
-    private MaterialButton btnCreateNewQuiz;
-    private BottomNavigationView bottomNavigationView;
+    private TextView tvTeacherName, tvTotalQuizzes, tvTotalQuestions, tvTotalAttempts;
+    private CardView btnCreateQuiz, btnUploadMcq, btnManageQuizzes, btnViewResults, btnSettings, btnLogout;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private List<Map<String, Object>> quizList = new ArrayList<>();
-    private QuizAdapter adapter;
-
-    private View statTotal, statActive, statDraft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,138 +28,77 @@ public class TeacherDashboardActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        btnCreateNewQuiz = findViewById(R.id.btnCreateNewQuiz);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        rvTeacherQuizzes = findViewById(R.id.rvTeacherQuizzes);
-        
-        statTotal = findViewById(R.id.statTotalQuizzes);
-        statActive = findViewById(R.id.statActiveQuizzes);
-        statDraft = findViewById(R.id.statDraftQuizzes);
+        // Initialize TextViews
+        tvTeacherName = findViewById(R.id.tv_teacher_name);
+        tvTotalQuizzes = findViewById(R.id.tv_total_quizzes);
+        tvTotalQuestions = findViewById(R.id.tv_total_questions);
+        tvTotalAttempts = findViewById(R.id.tv_total_attempts);
 
-        setupStatCards();
+        // Initialize Cards
+        btnCreateQuiz = findViewById(R.id.btn_create_quiz);
+        btnUploadMcq = findViewById(R.id.btn_upload_mcq);
+        btnManageQuizzes = findViewById(R.id.btn_manage_quizzes);
+        btnViewResults = findViewById(R.id.btn_view_results);
+        btnSettings = findViewById(R.id.btn_settings);
+        btnLogout = findViewById(R.id.btn_logout);
 
-        rvTeacherQuizzes.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new QuizAdapter(quizList);
-        rvTeacherQuizzes.setAdapter(adapter);
-
-        if (btnCreateNewQuiz != null) {
-            btnCreateNewQuiz.setOnClickListener(v -> {
-                startActivity(new Intent(TeacherDashboardActivity.this, CreateQuizActivity.class));
-            });
-        }
-
-        setupBottomNavigation();
-        loadTeacherQuizzes();
+        loadTeacherData();
+        setupClickListeners();
     }
 
-    private void setupStatCards() {
-        ((TextView) statTotal.findViewById(R.id.tvStatLabel)).setText("Total Quizzes");
-        ((ImageView) statTotal.findViewById(R.id.ivStatIcon)).setImageResource(android.R.drawable.ic_menu_agenda);
-        
-        ((TextView) statActive.findViewById(R.id.tvStatLabel)).setText("Active");
-        ((ImageView) statActive.findViewById(R.id.ivStatIcon)).setImageResource(android.R.drawable.ic_menu_send);
-        
-        ((TextView) statDraft.findViewById(R.id.tvStatLabel)).setText("Drafts");
-        ((ImageView) statDraft.findViewById(R.id.ivStatIcon)).setImageResource(android.R.drawable.ic_menu_edit);
-    }
-
-    private void loadTeacherQuizzes() {
-        if (mAuth.getCurrentUser() == null) return;
-        String uid = mAuth.getCurrentUser().getUid();
-
-        db.collection("quizzes")
-                .whereEqualTo("teacherUid", uid)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    quizList.clear();
-                    int activeCount = 0;
-                    int draftCount = 0;
-                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                        Map<String, Object> data = doc.getData();
-                        quizList.add(data);
-                        String status = (String) data.get("status");
-                        if ("PUBLISHED".equals(status)) {
-                            activeCount++;
-                        } else if ("DRAFT".equals(status)) {
-                            draftCount++;
+    private void loadTeacherData() {
+        if (mAuth.getCurrentUser() != null) {
+            String userId = mAuth.getCurrentUser().getUid();
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String name = documentSnapshot.getString("name");
+                            tvTeacherName.setText(name != null ? name : "Teacher");
                         }
-                    }
-                    adapter.notifyDataSetChanged();
-                    updateStats(quizList.size(), activeCount, draftCount);
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                    });
+
+            // Fetch real counts
+            db.collection("quizzes")
+                    .whereEqualTo("teacherId", userId)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        int count = queryDocumentSnapshots.size();
+                        tvTotalQuizzes.setText(String.valueOf(count));
+                    });
+        }
     }
 
-    private void updateStats(int total, int active, int draft) {
-        ((TextView) statTotal.findViewById(R.id.tvStatValue)).setText(String.valueOf(total));
-        ((TextView) statActive.findViewById(R.id.tvStatValue)).setText(String.valueOf(active));
-        ((TextView) statDraft.findViewById(R.id.tvStatValue)).setText(String.valueOf(draft));
-    }
+    private void setupClickListeners() {
+        btnCreateQuiz.setOnClickListener(v -> {
+            startActivity(new Intent(TeacherDashboardActivity.this, CreateQuizActivity.class));
+        });
 
-    private void setupBottomNavigation() {
-        if (bottomNavigationView == null) return;
-        
-        bottomNavigationView.setSelectedItemId(R.id.nav_dashboard);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_dashboard) {
-                return true;
-            } else if (id == R.id.nav_profile) {
-                logout();
-                return true;
-            }
-            return false;
+        btnUploadMcq.setOnClickListener(v -> {
+            startActivity(new Intent(TeacherDashboardActivity.this, UploadQuizActivity.class));
+        });
+
+        btnManageQuizzes.setOnClickListener(v -> {
+            startActivity(new Intent(TeacherDashboardActivity.this, ManageQuizActivity.class));
+        });
+
+        btnViewResults.setOnClickListener(v -> {
+            startActivity(new Intent(TeacherDashboardActivity.this, ResultActivity.class));
+        });
+
+        btnSettings.setOnClickListener(v -> {
+            Toast.makeText(this, "Settings coming soon!", Toast.LENGTH_SHORT).show();
+        });
+
+        btnLogout.setOnClickListener(v -> {
+            mAuth.signOut();
+            startActivity(new Intent(TeacherDashboardActivity.this, LoginActivity.class));
+            finish();
         });
     }
 
-    private void logout() {
-        mAuth.signOut();
-        startActivity(new Intent(this, LoginActivity.class));
-        finish();
-    }
-
-    private class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> {
-        private List<Map<String, Object>> list;
-
-        public QuizAdapter(List<Map<String, Object>> list) {
-            this.list = list;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_teacher_quiz_new, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            Map<String, Object> quiz = list.get(position);
-            holder.title.setText((String) quiz.get("quizTitle"));
-            holder.subject.setText((String) quiz.get("subject"));
-            holder.duration.setText(quiz.get("durationMinutes") + " Mins");
-            holder.level.setText((String) quiz.get("difficulty"));
-            holder.status.setText((String) quiz.get("status"));
-        }
-
-        @Override
-        public int getItemCount() {
-            return list.size();
-        }
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            TextView title, subject, duration, level, status;
-
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-                title = itemView.findViewById(R.id.tvQuizTitle);
-                subject = itemView.findViewById(R.id.tvSubject);
-                duration = itemView.findViewById(R.id.tvDuration);
-                level = itemView.findViewById(R.id.tvLevel);
-                status = itemView.findViewById(R.id.tvStatus);
-            }
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadTeacherData(); // Refresh stats when returning to dashboard
     }
 }

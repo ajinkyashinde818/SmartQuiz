@@ -1,19 +1,18 @@
 package com.example.quizapp;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+/**
+ * MainActivity is no longer used as SplashActivity is the entry point.
+ * This class redirects to SplashActivity if accidentally called.
+ */
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        startActivity(new Intent(this, SplashActivity.class));
+        finish();
     }
 }

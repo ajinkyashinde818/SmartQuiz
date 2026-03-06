@@ -1,113 +1,88 @@
 package com.example.quizapp;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 public class CreateQuizActivity extends AppCompatActivity {
 
-    private TextInputEditText etTitle, etDescription, etDuration, etPassing;
-    private AutoCompleteTextView spinnerSubject, spinnerYear, spinnerDifficulty;
+    private TextInputEditText etTitle, etSubject, etTimeLimit, etTotalMarks;
     private Button btnNext;
-    private List<Map<String, Object>> questionsList = new ArrayList<>();
-
-    private static final int PICK_FILE_REQUEST_CODE = 105;
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_quiz_step1);
+        setContentView(R.layout.activity_create_quiz);
 
-        initViews();
-        setupDropdowns();
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
+        etTitle = findViewById(R.id.et_quiz_title);
+        etSubject = findViewById(R.id.et_subject);
+        etTimeLimit = findViewById(R.id.et_time_limit);
+        etTotalMarks = findViewById(R.id.et_total_marks);
+        btnNext = findViewById(R.id.btn_next);
 
         btnNext.setOnClickListener(v -> validateAndProceed());
     }
 
-    private void initViews() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        etTitle = findViewById(R.id.etQuizTitle);
-        etDescription = findViewById(R.id.etDescription);
-        etDuration = findViewById(R.id.etDuration);
-        etPassing = findViewById(R.id.etPassing);
-        spinnerSubject = findViewById(R.id.spinnerSubject);
-        spinnerYear = findViewById(R.id.spinnerYear);
-        spinnerDifficulty = findViewById(R.id.spinnerDifficulty);
-        btnNext = findViewById(R.id.btnNextStep);
-    }
-
-    private void setupDropdowns() {
-        String[] subjects = {"Computer Science", "Mathematics", "Physics", "English", "General Knowledge"};
-        spinnerSubject.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, subjects));
-
-        String[] years = {"1st Year", "2nd Year", "3rd Year", "4th Year"};
-        spinnerYear.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, years));
-
-        String[] levels = {"Easy", "Medium", "Hard"};
-        spinnerDifficulty.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, levels));
-    }
-
     private void validateAndProceed() {
         String title = etTitle.getText().toString().trim();
-        String durationStr = etDuration.getText().toString().trim();
-        String passingStr = etPassing.getText().toString().trim();
+        String subject = etSubject.getText().toString().trim();
+        String timeStr = etTimeLimit.getText().toString().trim();
+        String marksStr = etTotalMarks.getText().toString().trim();
 
-        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(durationStr) || TextUtils.isEmpty(passingStr)) {
-            Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(subject) || TextUtils.isEmpty(timeStr) || TextUtils.isEmpty(marksStr)) {
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int duration = Integer.parseInt(durationStr);
-        int passing = Integer.parseInt(passingStr);
-
-        if (duration <= 0) {
-            etDuration.setError("Duration must be > 0");
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (passing > 100) {
-            etPassing.setError("Passing % cannot exceed 100");
-            return;
-        }
+        try {
+            int timeLimit = Integer.parseInt(timeStr);
+            int totalMarks = Integer.parseInt(marksStr);
+            String quizId = UUID.randomUUID().toString();
+            String teacherId = mAuth.getCurrentUser().getUid();
 
-        Intent intent = new Intent(this, QuestionBuilderActivity.class);
-        intent.putExtra("quizTitle", title);
-        intent.putExtra("description", etDescription.getText().toString().trim());
-        intent.putExtra("subject", spinnerSubject.getText().toString());
-        intent.putExtra("year", spinnerYear.getText().toString());
-        intent.putExtra("difficulty", spinnerDifficulty.getText().toString());
-        intent.putExtra("duration", duration);
-        intent.putExtra("passing", passing);
-        startActivity(intent);
+            Map<String, Object> quiz = new HashMap<>();
+            quiz.put("quizId", quizId);
+            quiz.put("title", title);
+            quiz.put("subject", subject);
+            quiz.put("teacherId", teacherId);
+            quiz.put("timeLimit", timeLimit);
+            quiz.put("totalMarks", totalMarks);
+            quiz.put("status", "Draft");
+            quiz.put("totalAttempts", 0);
+            quiz.put("createdAt", FieldValue.serverTimestamp());
+
+            db.collection("quizzes").document(quizId).set(quiz)
+                    .addOnSuccessListener(aVoid -> {
+                        Intent intent = new Intent(CreateQuizActivity.this, QuizModeSelectionActivity.class);
+                        intent.putExtra("QUIZ_ID", quizId);
+                        startActivity(intent);
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number format", Toast.LENGTH_SHORT).show();
+        }
     }
 }

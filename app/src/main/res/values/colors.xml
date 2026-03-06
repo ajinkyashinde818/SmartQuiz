@@ -36,4 +36,14 @@
     <color name="ui_nav_bg">#0F172A</color>
     <color name="ui_card_stat_bg">#FFFFFF</color>
     <color name="ui_card_stat_text">#0F172A</color>
+
+    <!-- New Splash Gradient Colors -->
+    <color name="splash_top">#80E9FF</color>
+    <color name="splash_center">#B0B1FF</color>
+    <color name="splash_bottom">#FF96FF</color>
+
+    <!-- Logo Colors -->
+    <color name="logo_green">#166534</color>
+    <color name="logo_orange">#F97316</color>
+    <color name="logo_navy">#1E3A8A</color>
 </resources>

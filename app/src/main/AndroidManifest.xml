@@ -14,6 +14,7 @@
 
         <activity
             android:name=".SplashActivity"
+            android:theme="@style/Theme.QuizApp.Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +27,14 @@
         <activity android:name=".TeacherDashboardActivity" />
         <activity android:name=".StudentDashboardActivity" />
         <activity android:name=".CreateQuizActivity" />
-        <activity android:name=".QuestionBuilderActivity" />
-        <activity android:name=".QuizAttemptActivity" />
+        <activity android:name=".QuizModeSelectionActivity" />
+        <activity android:name=".AddQuestionActivity" />
+        <activity android:name=".UploadQuizActivity" />
+        <activity android:name=".ManageQuizActivity" />
+        <activity android:name=".EditQuizActivity" />
+        <activity android:name=".ManageQuestionActivity" />
+        <activity android:name=".EditQuestionActivity" />
+        <activity android:name=".ResultActivity" />
 
     </application>
 

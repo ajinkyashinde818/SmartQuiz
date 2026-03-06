@@ -12,7 +12,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -22,7 +21,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private TextView tvGoToRegister;
     private ProgressBar progressBar;
-    
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
@@ -31,57 +29,54 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize UI components
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvGoToRegister = findViewById(R.id.tvGoToRegister);
         progressBar = findViewById(R.id.progressBar);
 
-        // Login Button Click
         btnLogin.setOnClickListener(v -> loginUser());
 
-        // Redirect to Register
-        tvGoToRegister.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegisterActivity.class)));
+        tvGoToRegister.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+        });
     }
 
     private void loginUser() {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (email.isEmpty()) { 
-            etEmail.setError("Email is required"); 
-            return; 
+        if (email.isEmpty()) {
+            etEmail.setError("Email is required");
+            return;
         }
-        if (password.isEmpty()) { 
-            etPassword.setError("Password is required"); 
-            return; 
+        if (password.isEmpty()) {
+            etPassword.setError("Password is required");
+            return;
         }
 
-        showProgress(true);
+        progressBar.setVisibility(View.VISIBLE);
+        btnLogin.setVisibility(View.GONE);
 
-        // Firebase Sign In
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        fetchUserRole(mAuth.getCurrentUser());
+                        fetchUserRole();
                     } else {
-                        showProgress(false);
+                        progressBar.setVisibility(View.GONE);
+                        btnLogin.setVisibility(View.VISIBLE);
                         Toast.makeText(LoginActivity.this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void fetchUserRole(FirebaseUser user) {
-        if (user == null) return;
-        
-        db.collection("users").document(user.getUid()).get()
+    private void fetchUserRole() {
+        String uid = mAuth.getCurrentUser().getUid();
+        db.collection("users").document(uid).get()
                 .addOnCompleteListener(task -> {
-                    showProgress(false);
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document != null && document.exists()) {
@@ -89,9 +84,14 @@ public class LoginActivity extends AppCompatActivity {
                             navigateToDashboard(role);
                         } else {
                             Toast.makeText(LoginActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
+                            mAuth.signOut();
+                            progressBar.setVisibility(View.GONE);
+                            btnLogin.setVisibility(View.VISIBLE);
                         }
                     } else {
-                        Toast.makeText(LoginActivity.this, "Error fetching user role", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Error fetching data", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        btnLogin.setVisibility(View.VISIBLE);
                     }
                 });
     }
@@ -105,10 +105,5 @@ public class LoginActivity extends AppCompatActivity {
         }
         startActivity(intent);
         finish();
-    }
-
-    private void showProgress(boolean show) {
-        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        btnLogin.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 }

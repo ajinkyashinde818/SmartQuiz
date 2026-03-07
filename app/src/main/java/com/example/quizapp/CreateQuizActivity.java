@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class CreateQuizActivity extends AppCompatActivity {
 
-    private TextInputEditText etTitle, etSubject, etTimeLimit, etTotalMarks;
+    private TextInputEditText etTitle, etSubject, etTimeLimit, etTotalQuestions;
     private Button btnNext;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -35,19 +35,24 @@ public class CreateQuizActivity extends AppCompatActivity {
         etTitle = findViewById(R.id.et_quiz_title);
         etSubject = findViewById(R.id.et_subject);
         etTimeLimit = findViewById(R.id.et_time_limit);
-        etTotalMarks = findViewById(R.id.et_total_marks);
+        etTotalQuestions = findViewById(R.id.et_total_questions);
         btnNext = findViewById(R.id.btn_next);
 
         btnNext.setOnClickListener(v -> validateAndProceed());
     }
 
     private void validateAndProceed() {
+        if (etTitle == null || etSubject == null || etTimeLimit == null || etTotalQuestions == null) {
+            Toast.makeText(this, "Error initializing views", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String title = etTitle.getText().toString().trim();
         String subject = etSubject.getText().toString().trim();
         String timeStr = etTimeLimit.getText().toString().trim();
-        String marksStr = etTotalMarks.getText().toString().trim();
+        String questionsStr = etTotalQuestions.getText().toString().trim();
 
-        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(subject) || TextUtils.isEmpty(timeStr) || TextUtils.isEmpty(marksStr)) {
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(subject) || TextUtils.isEmpty(timeStr) || TextUtils.isEmpty(questionsStr)) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -59,7 +64,7 @@ public class CreateQuizActivity extends AppCompatActivity {
 
         try {
             int timeLimit = Integer.parseInt(timeStr);
-            int totalMarks = Integer.parseInt(marksStr);
+            int totalQuestions = Integer.parseInt(questionsStr);
             String quizId = UUID.randomUUID().toString();
             String teacherId = mAuth.getCurrentUser().getUid();
 
@@ -69,7 +74,7 @@ public class CreateQuizActivity extends AppCompatActivity {
             quiz.put("subject", subject);
             quiz.put("teacherId", teacherId);
             quiz.put("timeLimit", timeLimit);
-            quiz.put("totalMarks", totalMarks);
+            quiz.put("totalQuestions", totalQuestions);
             quiz.put("status", "Draft");
             quiz.put("totalAttempts", 0);
             quiz.put("createdAt", FieldValue.serverTimestamp());
@@ -79,6 +84,7 @@ public class CreateQuizActivity extends AppCompatActivity {
                         Intent intent = new Intent(CreateQuizActivity.this, QuizModeSelectionActivity.class);
                         intent.putExtra("QUIZ_ID", quizId);
                         startActivity(intent);
+                        finish();
                     })
                     .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         } catch (NumberFormatException e) {

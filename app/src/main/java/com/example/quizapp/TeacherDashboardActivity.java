@@ -9,14 +9,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.quizapp.models.Quiz;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 public class TeacherDashboardActivity extends AppCompatActivity {
 
     private TextView tvTeacherName, tvTotalQuizzes, tvTotalQuestions, tvTotalAttempts;
-    private CardView btnCreateQuiz, btnUploadMcq, btnManageQuizzes, btnViewResults, btnSettings, btnLogout;
+    private CardView btnCreateQuiz, btnManageQuizzes, btnViewResults, btnLogout;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
@@ -36,10 +38,8 @@ public class TeacherDashboardActivity extends AppCompatActivity {
 
         // Initialize Cards
         btnCreateQuiz = findViewById(R.id.btn_create_quiz);
-        btnUploadMcq = findViewById(R.id.btn_upload_mcq);
         btnManageQuizzes = findViewById(R.id.btn_manage_quizzes);
         btnViewResults = findViewById(R.id.btn_view_results);
-        btnSettings = findViewById(R.id.btn_settings);
         btnLogout = findViewById(R.id.btn_logout);
 
         loadTeacherData();
@@ -62,8 +62,22 @@ public class TeacherDashboardActivity extends AppCompatActivity {
                     .whereEqualTo("teacherId", userId)
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
-                        int count = queryDocumentSnapshots.size();
-                        tvTotalQuizzes.setText(String.valueOf(count));
+                        int quizCount = queryDocumentSnapshots.size();
+                        int totalQuestions = 0;
+                        int totalAttempts = 0;
+
+                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                            Quiz quiz = doc.toObject(Quiz.class);
+                            if (quiz != null) {
+                                // totalMarks is used to store the question count
+                                totalQuestions += quiz.getTotalMarks();
+                                totalAttempts += quiz.getTotalAttempts();
+                            }
+                        }
+
+                        tvTotalQuizzes.setText(String.valueOf(quizCount));
+                        tvTotalQuestions.setText(String.valueOf(totalQuestions));
+                        tvTotalAttempts.setText(String.valueOf(totalAttempts));
                     });
         }
     }
@@ -73,20 +87,12 @@ public class TeacherDashboardActivity extends AppCompatActivity {
             startActivity(new Intent(TeacherDashboardActivity.this, CreateQuizActivity.class));
         });
 
-        btnUploadMcq.setOnClickListener(v -> {
-            startActivity(new Intent(TeacherDashboardActivity.this, UploadQuizActivity.class));
-        });
-
         btnManageQuizzes.setOnClickListener(v -> {
             startActivity(new Intent(TeacherDashboardActivity.this, ManageQuizActivity.class));
         });
 
         btnViewResults.setOnClickListener(v -> {
             startActivity(new Intent(TeacherDashboardActivity.this, ResultActivity.class));
-        });
-
-        btnSettings.setOnClickListener(v -> {
-            Toast.makeText(this, "Settings coming soon!", Toast.LENGTH_SHORT).show();
         });
 
         btnLogout.setOnClickListener(v -> {

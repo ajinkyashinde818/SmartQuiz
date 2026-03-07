@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -64,12 +65,25 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        fetchUserRole();
+                        updateFCMTokenAndFetchRole();
                     } else {
                         progressBar.setVisibility(View.GONE);
                         btnLogin.setVisibility(View.VISIBLE);
                         Toast.makeText(LoginActivity.this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
+                });
+    }
+
+    private void updateFCMTokenAndFetchRole() {
+        String uid = mAuth.getCurrentUser().getUid();
+        
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String token = task.getResult();
+                        db.collection("users").document(uid).update("fcmToken", token);
+                    }
+                    fetchUserRole();
                 });
     }
 

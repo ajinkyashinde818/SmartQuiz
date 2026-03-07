@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC"
+    tools:context=".ResultActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#6366F1">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:contentScrim="#6366F1"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🏆 Leaderboard"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_quiz_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Mathematics Quiz - Final Results"
+                    android:textColor="#E0E7FF"
+                    android:textSize="14sp" />
+
+                <!-- Top 3 Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="24dp"
+                    android:gravity="bottom"
+                    android:orientation="horizontal">
+
+                    <!-- Rank 2 -->
+                    <LinearLayout
+                        android:id="@+id/layout_rank2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="invisible">
+                        <TextView
+                            android:id="@+id/tv_rank2_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Student 2"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                        <View
+                            android:layout_width="60dp"
+                            android:layout_height="80dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/rank2_bg" />
+                        <TextView
+                            android:id="@+id/tv_rank2_score"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="85%"
+                            android:textColor="@color/white"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Rank 1 (Middle) -->
+                    <LinearLayout
+                        android:id="@+id/layout_rank1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.2"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="invisible">
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@android:drawable/btn_star_big_on" />
+                        <TextView
+                            android:id="@+id/tv_rank1_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Student 1"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <View
+                            android:layout_width="70dp"
+                            android:layout_height="110dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/rank1_bg" />
+                        <TextView
+                            android:id="@+id/tv_rank1_score"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="95%"
+                            android:textColor="@color/white"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Rank 3 -->
+                    <LinearLayout
+                        android:id="@+id/layout_rank3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="invisible">
+                        <TextView
+                            android:id="@+id/tv_rank3_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Student 3"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                        <View
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/rank3_bg" />
+                        <TextView
+                            android:id="@+id/tv_rank3_score"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="80%"
+                            android:textColor="@color/white"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_top_bg"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Other Participants"
+                android:textColor="#1E293B"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_other_students"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_quiz_result" />
+
+            <TextView
+                android:id="@+id/tv_no_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="No attempts yet"
+                android:textAlignment="center"
+                android:textColor="#64748B"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

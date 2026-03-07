@@ -11,7 +11,10 @@ public class Quiz implements Serializable {
     private int totalMarks;
     private int timeLimit; // in minutes
     private String teacherId;
+    private String teacherName;
     private String status; // "Draft" or "Active"
+    private String year;
+    private String division;
     private int totalAttempts;
     @ServerTimestamp
     private Date createdAt;
@@ -19,14 +22,17 @@ public class Quiz implements Serializable {
     public Quiz() {
     }
 
-    public Quiz(String quizId, String title, String subject, int totalMarks, int timeLimit, String teacherId, String status) {
+    public Quiz(String quizId, String title, String subject, int totalMarks, int timeLimit, String teacherId, String teacherName, String status, String year, String division) {
         this.quizId = quizId;
         this.title = title;
         this.subject = subject;
         this.totalMarks = totalMarks;
         this.timeLimit = timeLimit;
         this.teacherId = teacherId;
+        this.teacherName = teacherName;
         this.status = status;
+        this.year = year;
+        this.division = division;
         this.totalAttempts = 0;
     }
 
@@ -48,8 +54,17 @@ public class Quiz implements Serializable {
     public String getTeacherId() { return teacherId; }
     public void setTeacherId(String teacherId) { this.teacherId = teacherId; }
 
+    public String getTeacherName() { return teacherName; }
+    public void setTeacherName(String teacherName) { this.teacherName = teacherName; }
+
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getYear() { return year; }
+    public void setYear(String year) { this.year = year; }
+
+    public String getDivision() { return division; }
+    public void setDivision(String division) { this.division = division; }
 
     public int getTotalAttempts() { return totalAttempts; }
     public void setTotalAttempts(int totalAttempts) { this.totalAttempts = totalAttempts; }

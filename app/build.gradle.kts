@@ -36,9 +36,6 @@ android {
     }
 }
 
-// Log4j 2.18.0+ uses MethodHandle, which requires Android O (API 26).
-// Now that minSdk is 26, we can use newer versions, but forcing 2.17.2 
-// ensures stability if no specific features from later versions are needed.
 configurations.all {
     resolutionStrategy {
         force("org.apache.logging.log4j:log4j-api:2.17.2")
@@ -56,6 +53,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.messaging)
 
     // Google Sign In
     implementation(libs.play.services.auth)

@@ -69,6 +69,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Mobile Number"
+                        android:inputType="phone" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     app:passwordToggleEnabled="true"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
                     <com.google.android.material.textfield.TextInputEditText
@@ -138,6 +151,19 @@
                         android:textStyle="bold" />
                     <Spinner
                         android:id="@+id/spinnerYear"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Division"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                    <Spinner
+                        android:id="@+id/spinnerDivision"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:layout_marginTop="4dp" />

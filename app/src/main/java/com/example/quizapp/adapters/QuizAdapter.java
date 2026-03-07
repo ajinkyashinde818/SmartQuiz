@@ -41,6 +41,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
     public void onBindViewHolder(@NonNull QuizViewHolder holder, int position) {
         Quiz quiz = quizList.get(position);
         holder.tvTitle.setText(quiz.getTitle());
+        // Updated to use getTotalMarks() which stores the question count updated during upload
         holder.tvInfo.setText("Questions: " + quiz.getTotalMarks() + " | Time: " + quiz.getTimeLimit() + " min");
         holder.tvStatus.setText("Status: " + quiz.getStatus());
 
